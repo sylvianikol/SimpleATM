@@ -23,4 +23,9 @@ public class Account {
     public BigDecimal getBalance() {
         return this.balance;
     }
+
+    public Account setBalance(BigDecimal balance) {
+        this.balance = balance;
+        return this;
+    }
 }
