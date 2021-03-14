@@ -14,6 +14,8 @@ public class constantMessages {
 
     public static final String CHOOSE_OPERATION = "Choose operation: ";
 
+    public static final String ENTER_AMOUNT = "Enter amount: ";
+
     public static final String ENTER_PIN = "Enter PIN: ";
 
     public static final String INVALID_PIN = "Invalid PIN: ";

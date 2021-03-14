@@ -38,6 +38,8 @@ public class ATMInterface implements CommandLineRunner {
 
         switch (operationType) {
              case WITHDRAW: {
+
+                 System.out.println(ENTER_AMOUNT);
                  long input = Long.parseLong(reader.readLine());
                  BigDecimal amount = BigDecimal.valueOf(input);
 
@@ -90,11 +92,16 @@ public class ATMInterface implements CommandLineRunner {
 
     private OperationType readOperation() throws IOException {
         String input = reader.readLine().toUpperCase();
+        String type;
 
-        if (input.equals(OperationType.valueOf(input).toString())) {
-            return OperationType.valueOf(input);
+        try {
+            type = OperationType.valueOf(input).toString();
+            if (input.equals(type)) {
+                return OperationType.valueOf(input);
+            }
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
         }
-
         return OperationType.INVALID;
     }
 }
