@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsInstanceOf.*;
 
 class CardRepositoryTest {
 
@@ -26,6 +28,14 @@ class CardRepositoryTest {
         Card card = new Card("123", "1111", "1");
         Mockito.when(mockedRepository.get("123")).thenReturn(card);
         assertNotNull(card);
+    }
+
+    @Test
+    void getReturnsCard() {
+        Card card = new Card("123", "1111", "1");
+        Mockito.when(mockedRepository.get("123")).thenReturn(card);
+        Card expected = mockedRepository.get("123");
+        assertThat(expected, instanceOf(Card.class));
     }
 
     @Test
