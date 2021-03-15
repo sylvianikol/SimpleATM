@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -18,33 +19,29 @@ public class ATMInterface implements CommandLineRunner {
     private final AccountService accountService;
     private final Validator validator;
     private final BufferedReader reader;
+    private final BufferedWriter writer;
 
-    public ATMInterface(AccountService accountService, Validator validator, BufferedReader reader) {
+    public ATMInterface(AccountService accountService, Validator validator, BufferedReader reader, BufferedWriter writer) {
         this.accountService = accountService;
         this.validator = validator;
         this.reader = reader;
+        this.writer = writer;
     }
 
     @Override
     public void run(String... args) throws Exception {
 
-        System.out.println(ENTER_CARD_NO);
-        String cardNumber = reader.readLine();
+        String cardNumber = readCardNumber();
+        OperationType operationType = readOperation();
 
         String message;
-
-        System.out.println(CHOOSE_OPERATION);
-        OperationType operationType = readOperation();
 
         switch (operationType) {
              case WITHDRAW: {
 
-                 System.out.println(ENTER_AMOUNT);
-                 long input = Long.parseLong(reader.readLine());
-                 BigDecimal amount = BigDecimal.valueOf(input);
+                 BigDecimal amount = readAmount();
 
-                 System.out.println(ENTER_PIN);
-                 String PIN = reader.readLine();
+                 String PIN = readPIN();
 
                  if (validator.isValid(cardNumber, PIN)) {
                      message = accountService.withdraw(cardNumber, amount);
@@ -55,11 +52,10 @@ public class ATMInterface implements CommandLineRunner {
                  break;
              }
              case DEPOSIT: {
-                 long input = Long.parseLong(reader.readLine());
-                 BigDecimal amount = BigDecimal.valueOf(input);
 
-                 System.out.println(ENTER_PIN);
-                 String PIN = reader.readLine();
+                 BigDecimal amount = readAmount();
+
+                 String PIN = readPIN();
 
                  if (validator.isValid(cardNumber, PIN)) {
                      message = accountService.deposit(cardNumber, amount);
@@ -70,8 +66,8 @@ public class ATMInterface implements CommandLineRunner {
                  break;
              }
              case CHECK: {
-                 System.out.println(ENTER_PIN);
-                 String PIN = reader.readLine();
+
+                 String PIN = readPIN();
 
                  if (validator.isValid(cardNumber, PIN)) {
                      message = accountService.checkBalance(cardNumber);
@@ -87,10 +83,54 @@ public class ATMInterface implements CommandLineRunner {
              }
         }
 
-        System.out.println(message);
+        print(message);
+    }
+
+    private void prompt(String message) throws IOException {
+        switch (message) {
+            case ENTER_PIN:
+                writer.write(ENTER_PIN);
+                break;
+            case ENTER_AMOUNT:
+                writer.write(ENTER_AMOUNT);
+                break;
+            case ENTER_CARD_NO:
+                writer.write(ENTER_CARD_NO);
+                break;
+            case CHOOSE_OPERATION:
+                writer.write(CHOOSE_OPERATION);
+                break;
+            default:
+                writer.write(OUTPUT_ERROR);
+        }
+
+        writer.flush();
+    }
+
+    private void print(String output) throws IOException {
+        writer.write(output);
+        writer.flush();
+    }
+
+    private String readPIN() throws IOException {
+        prompt(ENTER_PIN);
+        return reader.readLine();
+    }
+
+    private BigDecimal readAmount() throws IOException {
+        prompt(ENTER_AMOUNT);
+        long input = Long.parseLong(reader.readLine());
+        return BigDecimal.valueOf(input);
+    }
+
+    private String readCardNumber() throws IOException {
+        prompt(ENTER_CARD_NO);
+        return reader.readLine();
     }
 
     private OperationType readOperation() throws IOException {
+        prompt(CHOOSE_OPERATION);
+
         String input = reader.readLine().toUpperCase();
         String type;
 
@@ -100,8 +140,10 @@ public class ATMInterface implements CommandLineRunner {
                 return OperationType.valueOf(input);
             }
         } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage());
+            writer.write(ex.getMessage());
+            writer.flush();
         }
+
         return OperationType.INVALID;
     }
 }

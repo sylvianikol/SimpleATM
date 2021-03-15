@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 @Configuration
 public class ApplicationBeanConfiguration {
@@ -28,5 +30,10 @@ public class ApplicationBeanConfiguration {
     @Bean
     public BufferedReader bufferedReader() {
         return new BufferedReader(new InputStreamReader(System.in));
+    }
+
+    @Bean
+    public BufferedWriter bufferedWriter() {
+        return new BufferedWriter(new OutputStreamWriter(System.out));
     }
 }

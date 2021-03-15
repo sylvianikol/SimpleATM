@@ -21,4 +21,6 @@ public class constantMessages {
     public static final String INVALID_PIN = "Invalid PIN: ";
 
     public static final String INVALID_OPERATION = "Invalid operation!";
+
+    public static final String OUTPUT_ERROR = "Output Error!";
 }
